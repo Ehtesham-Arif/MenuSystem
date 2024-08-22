@@ -1,0 +1,16 @@
+{
+    "name": "Reflex.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "Reflex"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
