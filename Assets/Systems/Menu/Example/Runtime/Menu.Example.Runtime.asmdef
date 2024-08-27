@@ -1,10 +1,12 @@
 {
-    "name": "Menu.Test",
+    "name": "Menu.Example.Runtime",
     "rootNamespace": "",
     "references": [
         "GUID:14b8369f970a27d41a31f2707237eace",
         "GUID:cb0b57db197be16498a34410848f04f7",
-        "GUID:1530a967b84cfb44dbdd5e8a1989764f"
+        "GUID:1530a967b84cfb44dbdd5e8a1989764f",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

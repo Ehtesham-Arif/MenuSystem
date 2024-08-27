@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Menus
+  m_EditorClassIdentifier: 
+  m_GroupName: Menus
+  m_Data:
+    m_SerializedData: []
+  m_GUID: ca4c51d9626e62249b960a7cdef5acca
+  m_SerializeEntries:
+  - m_GUID: f7ae6d9e1e14a3b47986acf36e2123fc
+    m_Address: Assets/Menus/MockMenu.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1206c1f8ce1611d4e9db880e7a31ccae
+    m_Address: Assets/Menus/MockMenuWithData.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c2debcc4216384d4db6643a25b18cc7d, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 93f7db10f7db6674d91a0eed6aaede90, type: 2}
+    - {fileID: 11400000, guid: d059a411c2ff517499ae452829d9f368, type: 2}

@@ -1,5 +1,4 @@
-﻿using Reflex;
-using System.IO;
+﻿using System.IO;
 using DG.Tweening;
 using UnityEngine;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace Systems.Menu.Runtime
 	{
 		private const string MENU_LOAD_PATH = "Assets/Menus";
 
-		public MenuNames Names = new();
+		public readonly MenuNames Names = new();
 
 		[SerializeField] private Image _backgroundBlocker = default;
 		[SerializeField] private Transform _menuRoot = default;
@@ -42,7 +41,7 @@ namespace Systems.Menu.Runtime
 
 			try
 			{
-				var menuPath = Path.Combine(MENU_LOAD_PATH, assetName);
+				var menuPath = $"{MENU_LOAD_PATH}/{assetName}.prefab";
 				var opHandle = Addressables.LoadAssetAsync<GameObject>(menuPath);
 
 				await opHandle;
