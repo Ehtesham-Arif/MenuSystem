@@ -1,0 +1,18 @@
+{
+    "name": "Menu.Test",
+    "rootNamespace": "",
+    "references": [
+        "GUID:14b8369f970a27d41a31f2707237eace",
+        "GUID:cb0b57db197be16498a34410848f04f7",
+        "GUID:1530a967b84cfb44dbdd5e8a1989764f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
