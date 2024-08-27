@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7266611351610910178}
   - component: {fileID: 7502270665836424522}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Close Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,6 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _title: {fileID: 3635076526337175144}
+  _closeBtn: {fileID: 7502270665836424522}
 --- !u!1 &7562201735400026943
 GameObject:
   m_ObjectHideFlags: 0

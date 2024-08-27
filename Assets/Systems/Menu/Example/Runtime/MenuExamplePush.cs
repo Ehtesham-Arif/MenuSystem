@@ -22,7 +22,7 @@ namespace Systems.Menu.Example.Runtime
 		private void SamplePushMenuWithData()
 		{
 			var data = new MockMenuData("MockMenu");
-			_menuSystem.LoadMenu(_menuSystem.Names.MockMenu, data).Forget();
+			_menuSystem.LoadMenu(_menuSystem.Names.MockMenuWithData, data).Forget();
 		}
 	}
 }

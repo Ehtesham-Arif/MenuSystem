@@ -11,11 +11,14 @@ namespace Systems.Menu.Example.Runtime
 		public override void OnEnter()
 		{
 			Debug.Log($"Mock Menu without Data is entered");
+
+			MenuRefs.CloseBtn.onClick.AddListener(UnloadMenu);
 		}
 
 		public override void OnExit()
 		{
 			Debug.Log($"Mock Menu without Data is exited");
+			MenuRefs.CloseBtn.onClick.RemoveListener(UnloadMenu);
 		}
 	}
 }

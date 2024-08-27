@@ -1,5 +1,4 @@
-﻿using System.IO;
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
@@ -65,7 +64,7 @@ namespace Systems.Menu.Runtime
 
 					menuObj.SetActive(true);
 
-					menu.transform.DOScale(1, 0.5f).From(0).SetEase(Ease.InBack);
+					menu.transform.DOScale(1, 0.1f).From(0).SetEase(Ease.InBack);
 				}
 			}
 			finally
@@ -92,7 +91,28 @@ namespace Systems.Menu.Runtime
 				menu.OnExit();
 				_menuCache.Remove(menu);
 
-				menu.transform.DOScale(0, 0.5f).From(1).SetEase(Ease.InBack)
+				menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
+					.OnComplete(() => { menu.gameObject.SetActive(false); });
+			}
+		}
+
+		/// <summary>
+		/// Unloads provided Menu
+		/// </summary>
+		/// <param name="menu"></param>
+		public void UnLoadMenu(Menu menu = default)
+		{
+			if (menu == default)
+			{
+				var count = _menuCache.Count;
+				if (count > 0) _menuCache.RemoveAt(count - 1);
+			}
+			else
+			{
+				menu.OnExit();
+				_menuCache.Remove(menu);
+
+				menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
 					.OnComplete(() => { menu.gameObject.SetActive(false); });
 			}
 		}
