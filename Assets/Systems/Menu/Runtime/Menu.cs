@@ -8,7 +8,7 @@ namespace Systems.Menu.Runtime
 	{
 		private MenuSystem _menuSystem = default;
 		
-		public string AssetKey => this.gameObject.name;
+		public string AssetName => this.gameObject.name;
 
 		public virtual void OnInject(Container container)
 		{

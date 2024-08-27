@@ -21,8 +21,8 @@ namespace Systems.Menu.Runtime
 
 		[SerializeField] private Image _backgroundBlocker = default;
 		[SerializeField] private Transform _menuRoot = default;
+		[SerializeField] private List<Menu> _serializedMenuCache = default;
 
-		private readonly List<Menu> _menuCache = new();
 		private Container _injectionContainer = default;
 		private readonly SemaphoreSlim _semaphore = new(1, 1);
 
@@ -40,15 +40,14 @@ namespace Systems.Menu.Runtime
 
 			try
 			{
-				var menuPath = $"{MENU_LOAD_PATH}/{assetName}.prefab";
-				var opHandle = Addressables.LoadAssetAsync<GameObject>(menuPath);
+				var menu = await GetMenu(assetName);
 
-				await opHandle;
-
-				if (opHandle.Status == AsyncOperationStatus.Succeeded)
+				if (menu != default)
 				{
-					var menuObj = Instantiate(opHandle.Result, _menuRoot);
-					var menu = menuObj.GetComponent<Menu>();
+					_serializedMenuCache.Add(menu);
+
+
+					var menuObj = menu.gameObject;
 
 					menuObj.SetActive(false);
 
@@ -60,7 +59,7 @@ namespace Systems.Menu.Runtime
 					}
 
 					menu.OnEnter();
-					_menuCache.Add(menu);
+					_serializedMenuCache.Add(menu);
 
 					menuObj.SetActive(true);
 
@@ -72,6 +71,34 @@ namespace Systems.Menu.Runtime
 				_semaphore.Release();
 			}
 		}
+		private async UniTask<Menu> GetMenu(string assetName)
+		{
+			if (_serializedMenuCache.Count > 10)
+			{
+				while (_serializedMenuCache.Count != 0)
+				{
+					_serializedMenuCache.RemoveAt(_serializedMenuCache.Count - 1);
+				}
+			}
+			
+			var menu = _serializedMenuCache.FirstOrDefault(x => string.Equals(x.AssetName, assetName));
+
+			if (menu == default)
+			{
+				var menuPath = $"{MENU_LOAD_PATH}/{assetName}.prefab";
+				var opHandle = Addressables.LoadAssetAsync<GameObject>(menuPath);
+
+				await opHandle;
+
+				if (opHandle.Status == AsyncOperationStatus.Succeeded)
+				{
+					var menuObj = Instantiate(opHandle.Result, _menuRoot);
+					menu = menuObj.GetComponent<Menu>();
+				}
+			}
+
+			return menu;
+		}
 
 		/// <summary>
 		/// Unloads Menu with provided assetKey
@@ -80,16 +107,15 @@ namespace Systems.Menu.Runtime
 		{
 			if (assetKey == default)
 			{
-				var count = _menuCache.Count;
-				if (count > 0) _menuCache.RemoveAt(count - 1);
+				var count = _serializedMenuCache.Count;
+				if (count > 0) _serializedMenuCache[count - 1].OnExit();
 			}
 			else
 			{
-				var menu = _menuCache.FirstOrDefault(x => x.AssetKey == assetKey);
+				var menu = _serializedMenuCache.FirstOrDefault(x => x.AssetName == assetKey);
 				if (menu == default) return;
 
 				menu.OnExit();
-				_menuCache.Remove(menu);
 
 				menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
 					.OnComplete(() => { menu.gameObject.SetActive(false); });
@@ -104,13 +130,12 @@ namespace Systems.Menu.Runtime
 		{
 			if (menu == default)
 			{
-				var count = _menuCache.Count;
-				if (count > 0) _menuCache.RemoveAt(count - 1);
+				var count = _serializedMenuCache.Count;
+				if (count > 0) _serializedMenuCache[count - 1].OnExit();
 			}
 			else
 			{
 				menu.OnExit();
-				_menuCache.Remove(menu);
 
 				menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
 					.OnComplete(() => { menu.gameObject.SetActive(false); });
