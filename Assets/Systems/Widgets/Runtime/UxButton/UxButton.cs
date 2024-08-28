@@ -1,26 +1,28 @@
-﻿using UnityEngine.Events;
+﻿using System.Collections.Generic;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Systems.Widgets.Runtime
 {
 	public sealed class UxButton : Button, IUxElement
 	{
-		private UnityAction _subscribedAction = default;
+		private readonly List<UnityAction> _subscribedActions = new();
 
 		public void SubscribeClick(UnityAction action)
 		{
 			onClick.AddListener(action);
 
-			_subscribedAction = action;
+			_subscribedActions.Add(action);
 		}
 
 		public void Dispose()
 		{
-			if (_subscribedAction != default)
+			foreach (var unityAction in _subscribedActions)
 			{
-				onClick.RemoveListener(_subscribedAction);
-				_subscribedAction = default;
+				onClick.RemoveListener(unityAction);
 			}
+
+			_subscribedActions.Clear();
 		}
 	}
 }

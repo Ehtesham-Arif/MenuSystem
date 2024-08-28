@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2715529369659823649}
   - component: {fileID: 7522618306349861793}
   - component: {fileID: 7266611351610910178}
-  - component: {fileID: 7502270665836424522}
+  - component: {fileID: 286165495308355346}
   m_Layer: 5
   m_Name: Close Button
   m_TagString: Untagged
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7502270665836424522
+--- !u!114 &286165495308355346
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,7 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1351274025110388994}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: bf4f9ff14c83413099983b29a8abb6fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _title: {fileID: 3635076526337175144}
-  _closeBtn: {fileID: 7502270665836424522}
+  _closeBtn: {fileID: 286165495308355346}
 --- !u!1 &7562201735400026943
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,13 +12,12 @@ namespace Systems.Menu.Example.Runtime
 		{
 			Debug.Log($"Mock Menu without Data is entered");
 
-			MenuRefs.CloseBtn.onClick.AddListener(UnloadMenu);
+			MenuRefs.CloseBtn.SubscribeClick(UnloadMenu);
 		}
 
 		public override void OnExit()
 		{
 			Debug.Log($"Mock Menu without Data is exited");
-			MenuRefs.CloseBtn.onClick.RemoveListener(UnloadMenu);
 		}
 	}
 }

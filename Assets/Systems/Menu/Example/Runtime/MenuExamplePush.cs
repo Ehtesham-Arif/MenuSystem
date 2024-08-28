@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using NaughtyAttributes;
 using Reflex.Attributes;
 using Systems.Menu.Runtime;
 using UnityEngine;
@@ -12,13 +13,13 @@ namespace Systems.Menu.Example.Runtime
 	{
 		[Inject] private readonly MenuSystem _menuSystem = default;
 
-		[ContextMenu("PushMenu")]
+		[Button]
 		private void SamplePushMenu()
 		{
 			_menuSystem.LoadMenu(_menuSystem.Names.MockMenu, IMenuData.Default).Forget();
 		}
 
-		[ContextMenu("PushMenuWithData")]
+		[Button]
 		private void SamplePushMenuWithData()
 		{
 			var data = new MockMenuData("MockMenu");
