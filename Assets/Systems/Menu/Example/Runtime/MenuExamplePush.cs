@@ -25,5 +25,11 @@ namespace Systems.Menu.Example.Runtime
 			var data = new MockMenuData("MockMenu");
 			_menuSystem.LoadMenu(_menuSystem.Names.MockMenuWithData, data).Forget();
 		}
+
+		[Button]
+		private void SamplePushMenuAlways()
+		{
+			_menuSystem.LoadMenu(_menuSystem.Names.MockMenu, IMenuData.Default, true).Forget();
+		}
 	}
 }

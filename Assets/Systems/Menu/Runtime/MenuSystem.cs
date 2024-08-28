@@ -46,8 +46,9 @@ namespace Systems.Menu.Runtime
 
 		/// <summary>
 		/// Loads a menu with given assetName and provided Data
+		/// InstantiateNew param will instantiate a new widget and won't reload cached Menu
 		/// </summary>
-		public async UniTask LoadMenu<TData>(string assetName, TData data) where TData : IMenuData
+		public async UniTask LoadMenu<TData>(string assetName, TData data, bool instantiateNew = default) where TData : IMenuData
 		{
 			await _semaphore.WaitAsync();
 
@@ -55,7 +56,7 @@ namespace Systems.Menu.Runtime
 			{
 				// do not allow clicks during async push
 				_transparentBlocker.SetActive(true);
-				var menu = await GetMenu(assetName);
+				var menu = await GetMenu(assetName, instantiateNew);
 				_transparentBlocker.SetActive(false);
 
 				if (menu != default)
@@ -84,7 +85,7 @@ namespace Systems.Menu.Runtime
 
 					menuObj.SetActive(true);
 
-					menu.transform.DOScale(1, 0.1f).From(0).SetEase(Ease.InBack);
+					menu.transform.DOScale(1, 0.1f).From(0).SetEase(Ease.OutBack);
 				}
 			}
 			finally
@@ -93,7 +94,7 @@ namespace Systems.Menu.Runtime
 			}
 		}
 
-		private async UniTask<Menu> GetMenu(string assetName)
+		private async UniTask<Menu> GetMenu(string assetName, bool instantiateNew)
 		{
 			// Asset Key of provided menu prefab
 			var assetKey = $"{MENU_LOAD_PATH}/{assetName}.prefab";
@@ -108,9 +109,18 @@ namespace Systems.Menu.Runtime
 
 					Destroy(cacheMenu.gameObject);
 				}
+
+				_menuCount = 0;
+				_menuTrack.Clear();
 			}
 
-			var menu = _serializedMenuCache.FirstOrDefault(x => string.Equals(x.AssetKey, assetKey));
+			Menu menu = default;
+
+			// only look in cache when asked to
+			if (instantiateNew == false)
+			{
+				menu = _serializedMenuCache.FirstOrDefault(x => string.Equals(x.AssetKey, assetKey));
+			}
 
 			if (menu == default)
 			{
