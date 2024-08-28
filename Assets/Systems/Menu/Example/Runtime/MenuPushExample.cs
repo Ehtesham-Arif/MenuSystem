@@ -9,7 +9,7 @@ namespace Systems.Menu.Example.Runtime
 	/// <summary>
 	/// Use this script to push mock menus from context menu
 	/// </summary>
-	public sealed class MenuExamplePush : MonoBehaviour
+	public sealed class MenuPushExample : MonoBehaviour
 	{
 		[Inject] private readonly MenuSystem _menuSystem = default;
 
