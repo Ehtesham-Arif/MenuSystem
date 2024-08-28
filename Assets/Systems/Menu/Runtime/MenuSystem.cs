@@ -45,9 +45,11 @@ namespace Systems.Menu.Runtime
 		}
 
 		/// <summary>
-		/// Loads a menu with given assetName and provided Data
-		/// InstantiateNew param will instantiate a new widget and won't reload cached Menu
+		/// Loads a menu with given assetName and provided Data. <see cref="UniTask"/> is returned for requested Menu
 		/// </summary>
+		/// <param name="assetName">Use <see cref="MenuNames"/> to load an asset. Note that it should match addressable key</param>
+		/// <param name="data"><see cref="IMenuData"/> associated with current Menu. It can also be <see cref="IMenuData.Default"/></param>
+		/// <param name="instantiateNew">Menus are by default stackable and instances are reused. If you want to stack multiple instances use this bool</param>
 		public async UniTask LoadMenu<TData>(string assetName, TData data, bool instantiateNew = default) where TData : IMenuData
 		{
 			await _semaphore.WaitAsync();
@@ -94,6 +96,31 @@ namespace Systems.Menu.Runtime
 			}
 		}
 
+		/// <summary>
+		/// Unloads <see cref="Menu"/> with provided assetKey. Top <see cref="Menu"/> is unloaded in case of no assetKey
+		/// </summary>
+		public void UnLoadMenu(string assetKey = null)
+		{
+			if (assetKey == default)
+			{
+				UnloadMenuFromTop();
+			}
+			else
+			{
+				var menu = _serializedMenuCache.FirstOrDefault(x => x.AssetKey == assetKey);
+				ExitMenu(menu);
+			}
+		}
+
+		/// <summary>
+		/// Unloads provided <see cref="Menu"/>, Top <see cref="Menu"/> is unloaded in case of no <see cref="Menu"/> provided
+		/// </summary>
+		public void UnLoadMenu(Menu menu = default)
+		{
+			if (menu == default) UnloadMenuFromTop();
+			else ExitMenu(menu);
+		}
+
 		private async UniTask<Menu> GetMenu(string assetName, bool instantiateNew)
 		{
 			// Asset Key of provided menu prefab
@@ -137,32 +164,6 @@ namespace Systems.Menu.Runtime
 			}
 
 			return menu;
-		}
-
-		/// <summary>
-		/// Unloads Menu with provided assetKey
-		/// </summary>
-		public void UnLoadMenu(string assetKey = null)
-		{
-			if (assetKey == default)
-			{
-				UnloadMenuFromTop();
-			}
-			else
-			{
-				var menu = _serializedMenuCache.FirstOrDefault(x => x.AssetKey == assetKey);
-				ExitMenu(menu);
-			}
-		}
-
-		/// <summary>
-		/// Unloads provided Menu
-		/// </summary>
-		/// <param name="menu"></param>
-		public void UnLoadMenu(Menu menu = default)
-		{
-			if (menu == default) UnloadMenuFromTop();
-			else ExitMenu(menu);
 		}
 
 		// Unloads Last Loaded Menu
