@@ -10,7 +10,7 @@ namespace Systems.Menu.Runtime
 		private MenuSystem _menuSystem = default;
 
 		// Unique Name of each Menu. 
-		public string AssetName => this.gameObject.name;
+		public string AssetKey { get; set; } = default;
 
 		// Injection of Reflex Container
 		public virtual void OnInject(Container container)

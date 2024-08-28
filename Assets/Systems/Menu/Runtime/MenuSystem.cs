@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using UnityEngine;
 using System.Linq;
 using Systems.Runtime;
@@ -19,18 +20,19 @@ namespace Systems.Menu.Runtime
 
 		public readonly MenuNames Names = new();
 
+		[SerializeField] private GameObject _transparentBlocker = default;
 		[SerializeField] private UxButton _backgroundBlocker = default;
 		[SerializeField] private Transform _menuRoot = default;
 		[SerializeField] private List<Menu> _serializedMenuCache = default;
 
-		private Container _injectionContainer = default;
 		private readonly SemaphoreSlim _semaphore = new(1, 1);
+		private readonly List<Menu> _menuTrack = new();
+		private Container _injectionContainer = default;
 		private int _menuCount = 0;
 
-		private void OnEnable()
-		{
-			_backgroundBlocker.SubscribeClick(OnBackgroundClick);
-		}
+		private void OnEnable() => _backgroundBlocker.SubscribeClick(OnBackgroundClick);
+
+		private void OnDisable() => _backgroundBlocker.Dispose();
 
 		private void OnBackgroundClick() => UnLoadMenu(default(Menu));
 
@@ -51,7 +53,10 @@ namespace Systems.Menu.Runtime
 
 			try
 			{
+				// do not allow clicks during async push
+				_transparentBlocker.SetActive(true);
 				var menu = await GetMenu(assetName);
+				_transparentBlocker.SetActive(false);
 
 				if (menu != default)
 				{
@@ -68,7 +73,14 @@ namespace Systems.Menu.Runtime
 
 					menu.OnEnter();
 					_menuCount++;
-					_serializedMenuCache.Add(menu);
+
+					_menuTrack.Add(menu);
+					SetBgState();
+
+					if (_serializedMenuCache.Contains(menu) == false)
+					{
+						_serializedMenuCache.Add(menu);
+					}
 
 					menuObj.SetActive(true);
 
@@ -83,6 +95,9 @@ namespace Systems.Menu.Runtime
 
 		private async UniTask<Menu> GetMenu(string assetName)
 		{
+			// Asset Key of provided menu prefab
+			var assetKey = $"{MENU_LOAD_PATH}/{assetName}.prefab";
+
 			// Count is exceeding 10 Clear Cache before instantiating new ones
 			if (_serializedMenuCache.Count > 10)
 			{
@@ -95,14 +110,11 @@ namespace Systems.Menu.Runtime
 				}
 			}
 
-			var menu = _serializedMenuCache.FirstOrDefault(x => string.Equals(x.AssetName, assetName));
+			var menu = _serializedMenuCache.FirstOrDefault(x => string.Equals(x.AssetKey, assetKey));
 
 			if (menu == default)
 			{
-				SetBgState(true);
-
-				var menuPath = $"{MENU_LOAD_PATH}/{assetName}.prefab";
-				var opHandle = Addressables.LoadAssetAsync<GameObject>(menuPath);
+				var opHandle = Addressables.LoadAssetAsync<GameObject>(assetKey);
 
 				await opHandle;
 
@@ -110,10 +122,7 @@ namespace Systems.Menu.Runtime
 				{
 					var menuObj = Instantiate(opHandle.Result, _menuRoot);
 					menu = menuObj.GetComponent<Menu>();
-				}
-				else
-				{
-					SetBgState(false);
+					menu.AssetKey = assetKey;
 				}
 			}
 
@@ -128,25 +137,11 @@ namespace Systems.Menu.Runtime
 			if (assetKey == default)
 			{
 				UnloadMenuFromTop();
-				SetBgState();
 			}
 			else
 			{
-				var menu = _serializedMenuCache.FirstOrDefault(x => x.AssetName == assetKey);
-				if (menu == default) return;
-
-				if (menu.AllowPop)
-				{
-					menu.OnExit();
-					_menuCount--;
-				}
-
-				menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
-					.OnComplete(() =>
-					{
-						menu.gameObject.SetActive(false);
-						SetBgState();
-					});
+				var menu = _serializedMenuCache.FirstOrDefault(x => x.AssetKey == assetKey);
+				ExitMenu(menu);
 			}
 		}
 
@@ -156,49 +151,42 @@ namespace Systems.Menu.Runtime
 		/// <param name="menu"></param>
 		public void UnLoadMenu(Menu menu = default)
 		{
-			if (menu == default)
-			{
-				UnloadMenuFromTop();
-				SetBgState();
-			}
-			else
-			{
-				if (menu.AllowPop)
-				{
-					menu.OnExit();
-					_menuCount--;
-				}
-
-				menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
-					.OnComplete(() =>
-					{
-						menu.gameObject.SetActive(false);
-						SetBgState();
-					});
-			}
+			if (menu == default) UnloadMenuFromTop();
+			else ExitMenu(menu);
 		}
 
 		// Unloads Last Loaded Menu
 		private void UnloadMenuFromTop()
 		{
-			var count = _serializedMenuCache.Count;
+			var count = _menuTrack.Count;
 
 			if (count > 0)
 			{
-				var targetMenu = _serializedMenuCache[count - 1];
-				if (targetMenu.AllowPop) targetMenu.OnExit();
-				_menuCount--;
+				var targetMenu = _menuTrack[count - 1];
+				ExitMenu(targetMenu);
 			}
 		}
 
-		private void SetBgState()
+		private void ExitMenu(Menu menu)
 		{
-			_backgroundBlocker.gameObject.SetActive(_menuCount != 0);
+			if (menu == default) return;
+			if (menu.AllowPop == false) return;
+
+			menu.OnExit();
+			_menuCount--;
+			_menuTrack.Remove(menu);
+
+			var disposables = menu.GetComponentsInChildren<IDisposable>();
+			foreach (var disposable in disposables) disposable.Dispose();
+
+			menu.transform.DOScale(0, 0.1f).From(1).SetEase(Ease.InBack)
+				.OnComplete(() =>
+				{
+					SetBgState();
+					menu.gameObject.SetActive(false);
+				});
 		}
 
-		private void SetBgState(bool state)
-		{
-			_backgroundBlocker.gameObject.SetActive(state);
-		}
+		private void SetBgState() => _backgroundBlocker.gameObject.SetActive(_menuCount != 0);
 	}
 }
